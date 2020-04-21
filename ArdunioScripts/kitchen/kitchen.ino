@@ -13,13 +13,13 @@ const char* mqtt_server = "192.168.1.171";  // IP of the MQTT broker
 const char* mqtt_username = "mayfield"; // MQTT username
 const char* mqtt_password = "IoTNetwork"; // MQTT password
 
-const char* clientID = "livingroom/"; // MQTT client ID change to your own client and ammend each topic to match 
-const char* humidity_topic = "livingroom/humidity";
-const char* temperature_topic = "livingroom/temperature";
-const char* pressure_topic = "livingroom/pressure";
-const char* iaq_topic = "livingroom/iaq";
-const char* mq5_topic = "livingroom/mq5";
-const char* dust_topic = "livingroom/dust";
+const char* clientID = "kitchen/"; // MQTT client ID change to your own client and ammend each topic to match 
+const char* humidity_topic = "kitchen/humidity";
+const char* temperature_topic = "kitchen/temperature";
+const char* pressure_topic = "kitchen/pressure";
+const char* iaq_topic = "kitchen/iaq";
+const char* mq5_topic = "kitchen/mq5";
+const char* dust_topic = "kitchen/dust";
 
 boolean sendData = false;
 
@@ -84,17 +84,24 @@ void setup() {
 
 void loop() 
 {
-  client.loop();
-  //connect_MQTT();
-  if(sendData == true)      
+  if(!client.loop())
   {
-    getBMEValues();
-    getGasData();
-    getDustConcentration();
-    debugData();
-    MQTTSendData();
-    sendData = false;
+    client.disconnect();
+    
+    connect_MQTT();
   }
+
+    client.loop();
+  //connect_MQTT();
+    if(sendData == true)      
+    {
+      getBMEValues();
+      getGasData();
+      getDustConcentration();
+      debugData();
+      MQTTSendData();
+      sendData = false;
+    }
 }
 
 void callback(char* topic, byte* payload, unsigned int length) 
